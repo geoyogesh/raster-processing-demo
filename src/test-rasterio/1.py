@@ -4,10 +4,13 @@ from osgeo import gdal
 import rasterio
 import matplotlib.pyplot as plt
 import os
+import numpy as np
+
 
 import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 warnings.filterwarnings("always")
-import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 
 
@@ -17,8 +20,8 @@ def ndvi(red, nir):
 
 
 # Here's the red band from a landsat 8 scene.
-
-base_path = '/Users/yogeshd/Documents/GitHub/raster-processing-demo/src/test-rasterio/data/landsat/LC08_L1TP_015034_20180708_20180717_01_T1'
+dir_path = os.path.dirname(os.path.realpath(__file__))
+base_path = os.path.join(dir_path, 'data/landsat/LC08_L1TP_015034_20180708_20180717_01_T1')
 L8_RED_fn = os.path.join(base_path, 'LC08_L1TP_015034_20180708_20180717_01_T1_B4.TIF')
 L8_NIR_fn = os.path.join(base_path, 'LC08_L1TP_015034_20180708_20180717_01_T1_B5.TIF')
 L8_QA_fn = os.path.join(base_path, 'LC08_L1TP_015034_20180708_20180717_01_T1_BQA.TIF')
@@ -93,7 +96,8 @@ with rasterio.open(L8_RED_fn) as red_raster:
     source_crs = red_raster.crs
     source_transform = red_raster.transform
 
-with rasterio.open('data/output/ndvi.tif', 'w', driver='GTIff',
+output_file = os.path.join(dir_path, 'data/output/ndvi.tif')
+with rasterio.open(output_file, 'w', driver='GTIff',
                    height=ndvi.shape[0],    # numpy of rows
                    width=ndvi.shape[1],     # number of columns
                    count=1,                        # number of bands
