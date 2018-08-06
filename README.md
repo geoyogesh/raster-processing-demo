@@ -7,3 +7,4 @@ gdalinfo --formats
 
 gdalinfo --format GTiff
 
+pip install rasterio -t .
