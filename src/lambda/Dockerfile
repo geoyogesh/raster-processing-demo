@@ -67,9 +67,11 @@ RUN zip -9 bundle.zip handler.py
 RUN zip -r9 bundle.zip worker.py
 RUN zip -r9 bundle.zip ../local/lib/libgdal.so.1
 
-WORKDIR "/lambda/src/venv/lib/python2.7/site-packages"
+WORKDIR "/lambda/src/env/lib/python2.7/site-packages"
 RUN zip -r9 /lambda/src/bundle.zip *
-WORKDIR "/lambda/src/venv/lib64/python2.7/site-packages"
+WORKDIR "/lambda/src/env/lib64/python2.7/site-packages"
 RUN zip -r9 /lambda/src/bundle.zip *
 
 WORKDIR "/lambda/src"
+RUN pip install awscli --upgrade --user
+RUN export PATH=~/.local/bin:$PATH
