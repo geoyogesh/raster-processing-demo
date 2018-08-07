@@ -56,16 +56,18 @@ RUN easy_install pip
 RUN pip install -U virtualenv
 RUN python -m virtualenv venv
 RUN virtualenv env
-RUN source env/bin/activate
-RUN export GDAL_CONFIG=/lambda/local/bin/gdal-config
-RUN pip install rasterio
+RUN /bin/bash -c "source env/bin/activate && export GDAL_CONFIG=/lambda/local/bin/gdal-config && pip install rasterio && deactivate"
 COPY handler.py /lambda/src/handler.py
 COPY worker.py /lambda/src/worker.py
+COPY worker.py /lambda/src/lambda_count.py
 
 RUN yum install -y zip
+RUN yum install -y unzip
 RUN zip -9 bundle.zip handler.py
 RUN zip -r9 bundle.zip worker.py
-RUN zip -r9 bundle.zip ../local/lib/libgdal.so.1
+RUN zip -r9 bundle.zip lambda_count.py
+WORKDIR "/lambda/local/lib"
+RUN zip -r9 /lambda/src/bundle.zip libgdal.so.1
 
 WORKDIR "/lambda/src/env/lib/python2.7/site-packages"
 RUN zip -r9 /lambda/src/bundle.zip *
@@ -74,4 +76,4 @@ RUN zip -r9 /lambda/src/bundle.zip *
 
 WORKDIR "/lambda/src"
 RUN pip install awscli --upgrade --user
-RUN export PATH=~/.local/bin:$PATH
+ENV PATH=~/.local/bin:$PATH
