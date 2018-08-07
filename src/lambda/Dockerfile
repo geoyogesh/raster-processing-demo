@@ -59,3 +59,17 @@ RUN virtualenv env
 RUN source env/bin/activate
 RUN export GDAL_CONFIG=/lambda/local/bin/gdal-config
 RUN pip install rasterio
+COPY handler.py /lambda/src/handler.py
+COPY worker.py /lambda/src/worker.py
+
+RUN yum install -y zip
+RUN zip -9 bundle.zip handler.py
+RUN zip -r9 bundle.zip worker.py
+RUN zip -r9 bundle.zip ../local/lib/libgdal.so.1
+
+WORKDIR "/lambda/src/venv/lib/python2.7/site-packages"
+RUN zip -r9 /lambda/src/bundle.zip *
+WORKDIR "/lambda/src/venv/lib64/python2.7/site-packages"
+RUN zip -r9 /lambda/src/bundle.zip *
+
+WORKDIR "/lambda/src"

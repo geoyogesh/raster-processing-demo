@@ -10,3 +10,4 @@ ssh -p 2222 user@localhost
 
 newpass
 
+docker cp centos:/lambda/src/bundle.zip "C:/temp/bundle.zip"
